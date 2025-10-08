@@ -1,0 +1,26 @@
+From 7f31c832306c10f4e92ac31124e144abff282e46 Mon Sep 17 00:00:00 2001
+From: Daiki Ueno <dueno@src.gnome.org>
+Date: Mon, 11 Dec 2023 08:39:58 +0900
+Subject: [PATCH] tests: Remove unnecessary inclusion of <gcrypt.h>
+
+Signed-off-by: Daiki Ueno <dueno@src.gnome.org>
+---
+ egg/test-hkdf.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/egg/test-hkdf.c b/egg/test-hkdf.c
+index 289e702..d90233c 100644
+--- a/egg/test-hkdf.c
++++ b/egg/test-hkdf.c
+@@ -32,8 +32,6 @@
+ #include "egg/egg-secure-memory.h"
+ #include "egg/egg-testing.h"
+ 
+-#include <gcrypt.h>
+-
+ #undef G_DISABLE_ASSERT
+ 
+ EGG_SECURE_DEFINE_GLIB_GLOBALS ();
+-- 
+2.43.0
+
