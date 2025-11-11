@@ -9,7 +9,7 @@
 
 Name:           libsecret
 Version:        0.21.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Library for storing and retrieving passwords and other secrets
 
 # libsecret/mock/aes.py is Apache-2.0
@@ -33,6 +33,8 @@ BuildRequires:  pkgconfig(gnutls) >= 3.8.2
 %else
 BuildRequires:  pkgconfig(libgcrypt) >= 1.2.2
 %endif
+BuildRequires:  python3-devel
+BuildRequires:  /usr/bin/marshalparser
 BuildRequires:  /usr/bin/xsltproc
 %if 0%{?has_valgrind}
 BuildRequires:  valgrind-devel
@@ -53,6 +55,18 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 %description    devel
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
+
+
+%package        mock-service
+Summary:        Python mock-service files from %{name}
+# This subpackage does not need libsecret installed,
+# but this ensure that if it is installed, the version matches (for good measure):
+Requires:       (%{name} = %{version}-%{release} if %{name})
+BuildArch:      noarch
+
+%description    mock-service
+The %{name}-mock-service package contains testing Python files from %{name},
+for testing of other similar tools, such as the Python SecretStorage package.
 
 
 %prep
@@ -81,6 +95,13 @@ rm -rf build/valgrind/
 
 %find_lang libsecret
 
+# For the mock-service subpackage
+mkdir -p %{buildroot}%{_datadir}/libsecret/mock
+cp -a libsecret/mock/*.py %{buildroot}%{_datadir}/libsecret/mock/
+cp -a libsecret/mock-service*.py %{buildroot}%{_datadir}/libsecret/
+%py_byte_compile %{python3} %{buildroot}%{_datadir}/libsecret/mock/
+%global py_reproducible_pyc_path %{buildroot}%{_datadir}/libsecret/
+
 
 %files -f libsecret.lang
 %license COPYING
@@ -105,8 +126,18 @@ rm -rf build/valgrind/
 %{_datadir}/vala/vapi/libsecret-1.vapi
 %doc %{_docdir}/libsecret-1/
 
+%files mock-service
+%license COPYING
+%dir %{_datadir}/libsecret
+%{_datadir}/libsecret/mock/
+%{_datadir}/libsecret/mock-service*.py
+
 
 %changelog
+* Sat Mar 01 2025 Romain Geissler <romain.geissler@amadeus.com> - 0.21.2-8
+- Backport packaging of mock service from Fedora in order to consume it in EPEL
+  Resolves: RHEL-81780
+
 * Tue Oct 29 2024 Troy Dawson <tdawson@redhat.com> - 0.21.2-7
 - Bump release for October 2024 mass rebuild:
   Resolves: RHEL-64018
